@@ -1,10 +1,7 @@
 <template>
   <div :class="priorityClass + ' p-2 rounded-lg mb-2'">
     <h3 class="text-base font-semibold">{{ task.name }}</h3>
-    <p class="text-sm mb-2">{{ task.description }}</p>
     <p class="text-xs mb-1"><strong>Assignee:</strong> {{ task.assignee }}</p>
-    <p class="text-xs mb-1"><strong>Due Date:</strong> {{ task.dueDate }}</p>
-    <p class="text-xs mb-1"><strong>Status:</strong> {{ task.status }}</p>
     <p class="text-xs mb-1"><strong>Spent Time:</strong> {{ task.spentTime }}</p>
     <p class="text-xs mb-1"><strong>Priority:</strong> {{ task.priority }}</p>
     <button @click="$emit('edit-task', task)" class="btn btn-xs btn-warning">Edit</button>

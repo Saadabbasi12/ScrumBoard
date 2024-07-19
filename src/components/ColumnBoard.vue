@@ -4,7 +4,7 @@
     @dragover.prevent
     @drop="handleDrop"
   >
-    <h2 class="text-sm font-bold mb-3">{{ title }}: <br />( {{ tasks.length }} )</h2>
+    <h2 class="text-sm font-bold mb-3">{{ title }}</h2>
     <div>
       <TaskCard
         class="draggable-item"
