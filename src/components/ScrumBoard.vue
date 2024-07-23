@@ -1,4 +1,6 @@
 <template>
+ <h1 class="text-center text-xl"><b>Agile Scrum Board</b></h1>
+
   <div class="container mx-auto p-2">
     <div class="btn-group" role="group">
       <button @click="openAddTaskModal" class="btn btn-info mb-4 px-1 mr-2">Add Task</button>

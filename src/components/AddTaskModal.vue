@@ -58,16 +58,18 @@
         </div>
         <div class="mb-4">
           <label class="block text-gray-700">Priority:</label>
-          <select v-model="localTask.priority" class="form-select mt-1 block w-full" required>
-            <option>High</option>
-            <option>Medium</option>
-            <option>Low</option>
+          <select
+            v-model="localTask.priority"
+            class="form-select mt-1 block w-full p-2 border border-gray-300 rounded-md"
+            required
+          >
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
           </select>
         </div>
         <div class="flex justify-end space-x-4">
-          <button type="button" @click="$emit('close')" class="btn btn-secondary">
-            Cancel
-          </button>
+          <button type="button" @click="$emit('close')" class="btn btn-secondary">Cancel</button>
           <button type="submit" class="btn btn-primary">
             {{ isEditing ? 'Update Task' : 'Add Task' }}
           </button>
@@ -86,7 +88,7 @@ export default {
   data() {
     return {
       localTask: { ...this.task },
-      todayDate: new Date().toISOString().split('T')[0]  // Get today's date in YYYY-MM-DD format
+      todayDate: new Date().toISOString().split('T')[0]
     }
   },
   computed: {
@@ -96,7 +98,6 @@ export default {
   },
   methods: {
     submitTask() {
-      // Ensure time is formatted correctly before submitting
       this.localTask.spentTime = parseFloat(this.localTask.spentTime) || 0
       this.$emit('add-task', { ...this.localTask })
       this.$emit('close')
@@ -104,7 +105,6 @@ export default {
     formatSpentTime(event) {
       let value = event.target.value
 
-      // Remove any non-numeric characters except decimal point
       value = value.replace(/[^0-9.]/g, '')
 
       this.localTask.spentTime = value
