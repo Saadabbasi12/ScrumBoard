@@ -1,11 +1,9 @@
 <template>
-  <div
-    class="bg-white rounded-lg shadow p-4 font-bold border: 2px dashed #ccc"
-    @dragover.prevent
-    @drop="handleDrop"
-  >
-    <h2 class="text-sm font-bold mb-3">{{ title }}</h2>
-    <div>
+  <div class="bg-white rounded-lg shadow p-4 font-bold border-2 border-dashed border-gray-300">
+    <h2 class="text-sm font-bold mb-3">
+      {{ formattedTitle }}
+    </h2>
+    <div class="task-list" @dragover.prevent @drop="handleDrop">
       <TaskCard
         class="draggable-item"
         v-for="task in tasks"
@@ -31,6 +29,11 @@ export default {
     title: String,
     tasks: Array
   },
+  computed: {
+    formattedTitle() {
+      return `${this.title} (${this.tasks.length})`
+    }
+  },
   methods: {
     handleDragStart(task) {
       event.dataTransfer.setData('task', JSON.stringify(task))
@@ -55,8 +58,9 @@ export default {
 .dragging {
   opacity: 0.6;
 }
-.drop-zone {
+.task-list {
   background-color: #f0f0f0;
   border: 2px dashed #ccc;
+  min-height: 100px;
 }
 </style>

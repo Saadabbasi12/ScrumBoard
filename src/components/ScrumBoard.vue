@@ -13,13 +13,21 @@
     />
     <div class="row flex flex-wrap gap-2">
       <div class="col-md-2">
-        <ColumnBoard
-          title="Backlog"
-          :tasks="tasks.backlog"
-          @edit-task="editTask"
-          @view-task="viewTask"
-          @update-task-status="updateTaskStatus"
-        />
+        <div class="backlog-column">
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="Search tasks"
+            class="search-input mb-2"
+          />
+          <ColumnBoard
+            title="Backlog"
+            :tasks="filteredBacklogTasks"
+            @edit-task="editTask"
+            @view-task="viewTask"
+            @update-task-status="updateTaskStatus"
+          />
+        </div>
       </div>
       <div class="col-md-2">
         <ColumnBoard
@@ -57,16 +65,6 @@
           @update-task-status="updateTaskStatus"
         />
       </div>
-      <!-- <div class="col-md-2">
-       
-        <ColumnBoard
-          title="InProgress"
-          :tasks="tasks.inProgress"
-          @edit-task="editTask"
-          @view-task="viewTask"
-          @update-task-status="updateTaskStatus"
-        />
-      </div> -->
     </div>
     <TaskDetails
       class="mt-2"
@@ -95,16 +93,23 @@ export default {
       showTaskDetails: false,
       currentTask: null,
       isEditing: false,
+      searchQuery: '',
       tasks: JSON.parse(localStorage.getItem('tasks')) || {
         backlog: [],
         open: [],
-        new: [],
+        todo: [],
         inProgress: [],
         feedbackneeded: [],
         readyfortesting: [],
-
         done: []
       }
+    }
+  },
+  computed: {
+    filteredBacklogTasks() {
+      return this.tasks.backlog.filter((task) =>
+        task.name.toLowerCase().includes(this.searchQuery.toLowerCase())
+      )
     }
   },
   methods: {
@@ -131,7 +136,7 @@ export default {
       if (this.isEditing) {
         this.updateTask(task)
       } else {
-        this.tasks.backlog.push(task)
+        this.tasks.backlog.unshift(task)
       }
       this.saveTasks()
       this.closeModal()
@@ -171,7 +176,17 @@ export default {
       const file = event.target.files[0]
       const reader = new FileReader()
       reader.onload = (e) => {
-        this.tasks = JSON.parse(e.target.result)
+        const importedTasks = JSON.parse(e.target.result)
+
+        for (const [status, tasksArray] of Object.entries(importedTasks)) {
+          if (Array.isArray(tasksArray)) {
+            if (this.tasks[status]) {
+              this.tasks[status] = [...this.tasks[status], ...tasksArray]
+            } else {
+              this.tasks[status] = tasksArray
+            }
+          }
+        }
         this.saveTasks()
       }
       reader.readAsText(file)
@@ -183,14 +198,9 @@ export default {
         if (taskIndex !== -1) {
           const updatedTask = { ...this.tasks[key][taskIndex], status: newStatus }
           this.tasks[key].splice(taskIndex, 1)
-
           const normalizedStatusKey = newStatus.replace(/\s/g, '').toLowerCase()
 
-          console.log('Normalized Status:', normalizedStatusKey)
-          console.log('Current Tasks:', this.tasks)
-
           if (!this.tasks[normalizedStatusKey]) {
-            console.error(`Status "${normalizedStatusKey}" does not exist in tasks.`)
             this.tasks[normalizedStatusKey] = []
           }
           this.tasks[normalizedStatusKey].push(updatedTask)
@@ -207,8 +217,20 @@ export default {
   }
 }
 </script>
+
 <style scoped>
 .col-md-2 {
   padding: 2px 2px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 0.25rem;
+}
+
+.backlog-column {
+  position: relative;
 }
 </style>

@@ -27,7 +27,7 @@
           <input
             v-model="localTask.assignee"
             type="text"
-            placeholder="Enter Assignee "
+            placeholder="Enter Assignee"
             class="form-input mt-1 bg-white border border-black px-3 block w-full"
             required
           />
@@ -38,46 +38,34 @@
             v-model="localTask.dueDate"
             type="date"
             class="form-input mt-1 px-3 block w-full"
+            :min="todayDate"
             required
           />
         </div>
-        <div class="mb-4">
-          <label class="block text-gray-700">Status</label>
-          <div class="relative mt-1">
-            <select
-              v-model="localTask.status"
-              class="form-select mt-1 block w-full py-2 px-3 border border-sky-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              required
-            >
-              <option>Backlog</option>
-              <option>To Do</option>
-              <option>Open</option>
-              <option>Ready for Testing</option>
-              <option>Feedback Needed</option>
-            </select>
-          </div>
-        </div>
-
         <div class="mb-4">
           <label class="block text-gray-700">Spent Time:</label>
           <input
             v-model="localTask.spentTime"
-            placeholder="Hours/Month/years"
+            placeholder="Enter time in hours"
             type="text"
             class="form-input mt-1 bg-white border border-black block w-full"
             required
+            @input="formatSpentTime"
           />
+          <p v-if="localTask.spentTime">
+            {{ formattedSpentTime }}
+          </p>
         </div>
         <div class="mb-4">
-          <label class="block text-gray-700">Priority</label>
+          <label class="block text-gray-700">Priority:</label>
           <select v-model="localTask.priority" class="form-select mt-1 block w-full" required>
             <option>High</option>
             <option>Medium</option>
             <option>Low</option>
           </select>
         </div>
-        <div class="flex justify-end">
-          <button type="button" @click="$emit('close')" class="btn btn-secondary mr-2 ml-3">
+        <div class="flex justify-end space-x-4">
+          <button type="button" @click="$emit('close')" class="btn btn-secondary">
             Cancel
           </button>
           <button type="submit" class="btn btn-primary">
@@ -97,13 +85,29 @@ export default {
   },
   data() {
     return {
-      localTask: { ...this.task }
+      localTask: { ...this.task },
+      todayDate: new Date().toISOString().split('T')[0]  // Get today's date in YYYY-MM-DD format
+    }
+  },
+  computed: {
+    formattedSpentTime() {
+      return this.localTask.spentTime ? `${parseFloat(this.localTask.spentTime)} hr/s` : ''
     }
   },
   methods: {
     submitTask() {
+      // Ensure time is formatted correctly before submitting
+      this.localTask.spentTime = parseFloat(this.localTask.spentTime) || 0
       this.$emit('add-task', { ...this.localTask })
       this.$emit('close')
+    },
+    formatSpentTime(event) {
+      let value = event.target.value
+
+      // Remove any non-numeric characters except decimal point
+      value = value.replace(/[^0-9.]/g, '')
+
+      this.localTask.spentTime = value
     }
   },
   watch: {
@@ -113,3 +117,16 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.form-input {
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+}
+.btn {
+  padding: 0.5rem 1rem;
+}
+.space-x-4 > * + * {
+  margin-left: 1rem;
+}
+</style>
